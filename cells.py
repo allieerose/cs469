@@ -33,4 +33,10 @@ class Cell ():
         elif event.widget["text"] == "":
             event.widget["text"] = "B"
             event.widget["state"] = "disabled"
+    
+    def set_bomb(self):
+        """
+        Sets the cell to be a bomb
+        """
+        self._is_bomb = True
             
