@@ -18,26 +18,30 @@ class Cell ():
         """
         Event handler for left-click of a button.
         """
-        event.widget["state"] = tk.DISABLED
-        event.widget["bg"] = "gray64"
-        event.widget["relief"] = tk.SUNKEN
-        if self._is_mine:
-            self._button["image"] = self._game.get_icon('mine')
-            self._game.lose()
-        else: 
-            self._button["image"] = self._game.adjacent_bomb_count(self._row, self._column)
-            self._game.cell_clicked(self._row, self._column)
-    
+        if self._button['state'] != tk.DISABLED:
+            event.widget['state'] = tk.DISABLED
+            self._button.after(0, self.deactivate)
+            if self._is_mine:
+                self._button["image"] = self._game.get_icon('mine')
+                self._game.lose()
+            else: 
+                self._game.cell_clicked(self._row, self._column)
+                self._button["image"] = self._game.adjacent_bomb_count(self._row, self._column)
+
+    def deactivate(self):
+        self._button['bg'] = 'gray64'
+        self._button['relief'] = tk.SUNKEN
+
     def right_click(self, event):
         """
         Event handler for right-click of a button.
         """
         if self._flagged: # unflag cell
-            event.widget["state"] = "active"
+            event.widget["state"] = tk.ACTIVE
             self._button["image"] = self._game.get_icon('blank')
             self._flagged = False
-        elif event.widget["state"] != "disabled":
-            event.widget["state"] = "disabled"
+        elif event.widget["state"] != tk.DISABLED:
+            event.widget["state"] = tk.DISABLED
             self._button["image"] = self._game.get_icon('flag')
             self._flagged = True
     
