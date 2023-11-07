@@ -2,7 +2,7 @@ import tkinter as tk
 from stopwatch import Timer
 from cells import Cell
 import random
-from PIL import Image, ImageTk
+#from PIL import Image, ImageTk
 
 class Game ():
     def __init__(self, root, timer, rows, columns) -> None:
@@ -24,18 +24,18 @@ class Game ():
         """
         Initializes all icons for later display on cells.
         """
-        self._icons['blank'] = tk.PhotoImage(file='icons/blank.png').subsample(4)
-        self._icons['mine'] = tk.PhotoImage(file='icons/mine.png').subsample(4)
-        self._icons['flag'] = tk.PhotoImage(file='icons/flag.png').subsample(4)
-        self._icons[1] = tk.PhotoImage(file='icons/1.png').subsample(4)
-        self._icons[2] = tk.PhotoImage(file='icons/2.png').subsample(4)
-        self._icons[3] = tk.PhotoImage(file='icons/3.png').subsample(4)
-        self._icons[4] = tk.PhotoImage(file='icons/4.png').subsample(4)
-        self._icons[5] = tk.PhotoImage(file='icons/5.png').subsample(4)
-        self._icons[6] = tk.PhotoImage(file='icons/6.png').subsample(4)
-        self._icons[7] = tk.PhotoImage(file='icons/7.png').subsample(4)
-        self._icons[8] = tk.PhotoImage(file='icons/8.png').subsample(4)
-        self._icons[9] = tk.PhotoImage(file='icons/9.png').subsample(4)
+        self._icons['blank'] = tk.PhotoImage(file='icons/blank.png').subsample(3)
+        self._icons['mine'] = tk.PhotoImage(file='icons/mine.png').subsample(3)
+        self._icons['flag'] = tk.PhotoImage(file='icons/flag.png').subsample(3)
+        self._icons[1] = tk.PhotoImage(file='icons/1.png').subsample(3)
+        self._icons[2] = tk.PhotoImage(file='icons/2.png').subsample(3)
+        self._icons[3] = tk.PhotoImage(file='icons/3.png').subsample(3)
+        self._icons[4] = tk.PhotoImage(file='icons/4.png').subsample(3)
+        self._icons[5] = tk.PhotoImage(file='icons/5.png').subsample(3)
+        self._icons[6] = tk.PhotoImage(file='icons/6.png').subsample(3)
+        self._icons[7] = tk.PhotoImage(file='icons/7.png').subsample(3)
+        self._icons[8] = tk.PhotoImage(file='icons/8.png').subsample(3)
+        self._icons[9] = tk.PhotoImage(file='icons/9.png').subsample(3)
     
     def get_icon(self, name):
         """
@@ -49,7 +49,7 @@ class Game ():
         """
         # start timer
         self._timer.start()
-        # place bombs
+        # place 10 bombs
         for i in range(10):
             bomb_location = (random.randint(0, 8), random.randint(0,8))
             while bomb_location in self._bombs or bomb_location == (row, column):
@@ -86,7 +86,7 @@ class Game ():
                     count += 1
         if count > 0:
             return self._icons[count]
-        else:
+        else: # 0 adjacent bombs
             return self._icons['blank']
 
     def win(self):
