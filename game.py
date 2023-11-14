@@ -39,8 +39,12 @@ class Game ():
     
     def get_icon(self, name):
         """
-        Takes a string and returns the PhotoImage icon.
+        Takes one of the following strings: 'mine', 'flag', 'blank'
+        or an integer 0-8 and returns the PhotoImage icon.
+        Note that 0 is equivalent to 'blank'.
         """
+        if name == 0:
+            name = 'blank'
         return self._icons[name]
 
     def _start_game(self, row, column):
@@ -56,10 +60,20 @@ class Game ():
                 bomb_location = (random.randint(0, 8), random.randint(0,8))
             self._bombs.append(bomb_location)
             self._cells[bomb_location[0]][bomb_location[1]].set_bomb()
+            # update the adjacent bomb count for all adjacent cells
+            self.add_adjacent_bombs(bomb_location[0], bomb_location[1]) 
 
             # TESTING !!!
             print(bomb_location) 
     
+    def add_adjacent_bombs(self, row, column):
+        """
+        Adds 1 to the adjacent bomb count for all cells adjacent to the cell at the given row, column.
+        """
+        adj_cells = self.get_adjacent_cell_indices(row,column)
+        for (i,j) in adj_cells:
+            self._cells[i][j].add_adjacent_bomb()
+
     def cell_clicked(self, row, column):
         """
         Should be called when a non-bomb cell is clicked. Updates the count of selected cells and triggers
@@ -69,6 +83,7 @@ class Game ():
         if self._clicked_cells == 1:
             self._start_game(row, column)
         elif self._clicked_cells == 71: # all non-bomb cells clicked
+            print(f'Final cell: ', row, ' ', column)
             self.win()
         
         # TESTING
@@ -77,17 +92,49 @@ class Game ():
     
     def adjacent_bomb_count(self, row, column):
         """
+        NO LONGER NEEDED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         Returns the number of adjacent bombs to the given row, col.
         """
         count = 0
-        for i in range(row-1, row+2):
-            for j in range(column-1, column+2):
-                if (i,j) in self._bombs:
-                    count += 1
+        adj_cells = self.get_adjacent_cell_indices(row, column)
+        for cell in adj_cells:
+            if (cell[0],cell[1]) in self._bombs:
+                count += 1
+                
         if count > 0:
             return self._icons[count]
         else: # 0 adjacent bombs
             return self._icons['blank']
+    
+    def zero_cell_reveals(self, row, column):
+        """
+        Reveals all cells adjacent to the cell at the given row, column. If any of the revealed
+        cells have 0 adjacent mines, those also have all adjacent cells revealed. 
+        Note that the given row, column should correspond to a cell with 0 adjacent bombs.
+        """
+        zero_cells = [(row, column)]
+        while len(zero_cells) > 0:
+            zero_cell = zero_cells.pop() # remove a zero cell from the list
+            adj_cells = self.get_adjacent_cell_indices(zero_cell[0], zero_cell[1])
+            for (i,j) in adj_cells:
+                if self._cells[i][j].get_adj_mine_count() == 0:
+                    zero_cells.append((i,j))
+                if self._cells[i][j].get_adj_mine_count() >= 0:
+                    self._cells[i][j].reveal_adj_mines()
+                    self.cell_clicked(i,j)
+        
+    def get_adjacent_cell_indices(self, row, column):
+        """
+        Returns a list of tuples in form (row, column) containing the indices of all
+        adjacent cells on the board to the cell at the given row, column.
+        """
+        adj_cells = []
+        for i in range(max(0, row-1), min(9, row+2)):
+            for j in range(max(0, column-1), min(9, column+2)):
+                if (i,j) != (row, column):
+                    adj_cells.append((i,j))
+        
+        return adj_cells
 
     def win(self):
         """

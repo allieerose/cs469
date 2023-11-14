@@ -12,7 +12,13 @@ class Cell ():
         self._column = column
         self._is_mine = False # by default
         self._flagged = False
+        self._adjacent_mines = 0
     
+    def add_adjacent_bomb(self):
+        """
+        Adds 1 to the count of adjacent mines. 
+        """
+        self._adjacent_mines += 1
 
     def left_click(self):
         """
@@ -27,11 +33,14 @@ class Cell ():
             if self._is_mine:
                 self._button["image"] = self._game.get_icon('mine')
                 self._game.lose()
-            else: 
+            else:
                 self._game.cell_clicked(self._row, self._column)
-                self._button["image"] = self._game.adjacent_bomb_count(self._row, self._column)
-                self._button = None # remove button reference to indicate button should no longer function
-
+                if self._adjacent_mines == 0: 
+                    self._button = None
+                    self._game.zero_cell_reveals(self._row, self._column)
+                else:
+                    self._button["image"] = self._game.get_icon(self._adjacent_mines)
+                    self._button = None # remove button reference to indicate button should no longer function
 
     def right_click(self, event):
         """
@@ -51,3 +60,28 @@ class Cell ():
         """
         self._is_mine = True
             
+    def reveal_adj_mines(self):
+        """
+        Performs the button appearance change to reveal the number of adjacent bombs without the cell having
+        been left-clicked. This is a helper method for revealing cells adjacent to a revealed 0-value cell. 
+        """
+        if self._is_mine:
+            print("ERROR! NON-0 CELL PICKED IN METHOD")
+
+        if self._button is not None:
+            self._button.configure(
+                command=lambda: None,
+                relief=tk.SUNKEN,
+                background='gray64',
+                image=self._game.get_icon(self._adjacent_mines)
+            )
+            self._button = None # cell should be inactive after being revealed
+    
+    def get_adj_mine_count(self):
+        """
+        Returns the number of recorded adjacent mines.
+        """
+        if self._button is None or self._is_mine:
+            # the mine count for this cell is irrelevant (either it is inactive or is a mine)
+            return -1 
+        return self._adjacent_mines
