@@ -90,22 +90,6 @@ class Game ():
         if self._clicked_cells % 10 == 0:
             print(self._clicked_cells)
     
-    def adjacent_bomb_count(self, row, column):
-        """
-        NO LONGER NEEDED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        Returns the number of adjacent bombs to the given row, col.
-        """
-        count = 0
-        adj_cells = self.get_adjacent_cell_indices(row, column)
-        for cell in adj_cells:
-            if (cell[0],cell[1]) in self._bombs:
-                count += 1
-                
-        if count > 0:
-            return self._icons[count]
-        else: # 0 adjacent bombs
-            return self._icons['blank']
-    
     def zero_cell_reveals(self, row, column):
         """
         Reveals all cells adjacent to the cell at the given row, column. If any of the revealed

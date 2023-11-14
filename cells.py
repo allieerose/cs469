@@ -65,7 +65,7 @@ class Cell ():
         Performs the button appearance change to reveal the number of adjacent bombs without the cell having
         been left-clicked. This is a helper method for revealing cells adjacent to a revealed 0-value cell. 
         """
-        if self._is_mine:
+        if self._is_mine: # for testing purposes
             print("ERROR! NON-0 CELL PICKED IN METHOD")
 
         if self._button is not None:
