@@ -126,7 +126,11 @@ class Game ():
         and showing win-state info in a pop-up.
         """
         self._timer.stop()
-        # perform win-state actions
+        # set all cells to inactive
+        
+        # call pop-up
+        win_message = "You won in ", self._timer.get_label(), ". \n Play again?"
+        self.popup(True, win_message)
 
     def lose(self):
         """
@@ -135,3 +139,21 @@ class Game ():
         """
         self._timer.stop()
         # perform lose-state actions
+
+    def popup(self, win, message):
+        root = tk.Tk()
+        if win:
+            root.title('You won!')
+        else:
+            root.title('Too bad.')
+        frame = tk.Frame(root, padx=20, pady=20)
+        frame.pack()
+        output = tk.Label(frame, text=message)
+        output.pack()
+        replay_button = tk.Button(frame, text='Replay', command=self.new_game)
+        replay_button.pack()
+        quit_button = tk.Button(frame, text='Quit')
+        quit_button.pack() # TODO: add function to quit
+
+    def new_game(self):
+        pass
