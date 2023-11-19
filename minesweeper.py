@@ -4,15 +4,15 @@ from stopwatch import Timer
 from game import Game
 
 
-root = tk.Tk()
-root.title("Minesweeper")
+class MinesweeperApp():
+    def __init__(self):
+        # initializes with a game
+        game = Game(self, 9, 9)
+    
+    def make_new_game(self):
+        """
+        Starts a new game of minesweeper.
+        """
+        game = Game(self, 9,9)
 
-# initialize timer at top of screen
-timer = Timer(root)
-time_label = timer.get_label()
-time_label['font'] = ('Yu Gothic Medium', '16')
-time_label.pack()
-
-game = Game(root, timer, 9, 9)
-
-root.mainloop()
+MinesweeperApp()

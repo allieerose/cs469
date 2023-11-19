@@ -5,9 +5,19 @@ import random
 #from PIL import Image, ImageTk
 
 class Game ():
-    def __init__(self, root, timer, rows, columns) -> None:
-        self._timer = timer
-        self._frame = tk.Frame(root, padx=20, pady=20)
+    def __init__(self, master, rows, columns) -> None:
+        # maintain reference to App 
+        self._master = master
+        # set up window
+        self._root = tk.Tk()
+        self._root.title("Minesweeper")
+        # set up timer
+        self._timer = Timer(self._root)
+        time_label = self._timer.get_label()
+        time_label['font'] = ('Yu Gothic Medium', '16')
+        time_label.pack()
+        # set up grid of cells
+        self._frame = tk.Frame(self._root, padx=20, pady=20)
         self._frame.pack()
         self._icons = {}
         self._init_icons()
@@ -19,6 +29,8 @@ class Game ():
             for j in range(columns):
                 row.append(Cell(self._frame, self, i, j))
             self._cells.append(row)
+        # run application
+        self._root.mainloop()
 
     def _init_icons(self):
         """
@@ -127,9 +139,15 @@ class Game ():
         """
         self._timer.stop()
         # set all cells to inactive
-        
+        self.deactivate_board()
         # call pop-up
-        win_message = "You won in ", self._timer.get_label(), ". \n Play again?"
+        final_time = self._timer.get_final_time()
+        if final_time[0] == "00":
+            win_message = "You won in "+ final_time[1]+ " seconds. \n Play again?"
+        elif final_time[0] == "01":
+            win_message = "You won in " + final_time[0]+ " minute and "+ final_time[1]+ " seconds. \n Play again?"
+        else:
+            win_message = "You won in " + final_time[0]+ " minutes and "+ final_time[1]+ " seconds. \n Play again?"
         self.popup(True, win_message)
 
     def lose(self):
@@ -140,20 +158,68 @@ class Game ():
         self._timer.stop()
         # perform lose-state actions
 
+        # set all cells to inactive
+        self.deactivate_board()
+        # call pop-up
+        correct_flags = 0
+        incorrect_flags = 0
+        unflagged_bombs = 0
+        for i in range(9):
+            for j in range(9):
+                if (i,j) in self._bombs:
+                    if self._cells[i][j].get_if_flagged():
+                        # cell is a bomb and was flagged
+                        correct_flags += 1
+                    else:
+                        # cell is a bomb and was NOT flagged
+                        unflagged_bombs += 1
+                elif self._cells[i][j].get_if_flagged():
+                    # cell is not a bomb and is flagged
+                    incorrect_flags += 1
+        message = ("OOPS, you clicked on a mine!\n"
+        f"You correctly flagged {correct_flags} bomb(s), incorrectly flagged {incorrect_flags} cells(s), and"
+        f" missed {unflagged_bombs} bomb(s) on the board.\n Play again?")
+        self.popup(False, message)
+    
+    def deactivate_board(self):
+        """
+        Deactivates all cells on the board so they are no longer function when left/right clicked.
+        """
+        for row in self._cells:
+            for cell in row:
+                cell.set_inactive()
+
     def popup(self, win, message):
-        root = tk.Tk()
+        """
+        Creates a pop-up upon a win or lose state, displaying the given message and providing options to quit the 
+        game or start a new game.
+
+        :boolean win: indicates whether the game was won or lost (impacts pop-up title)
+        """
+        toplevel = tk.Toplevel()
         if win:
-            root.title('You won!')
+            toplevel.title('You won!')
         else:
-            root.title('Too bad.')
-        frame = tk.Frame(root, padx=20, pady=20)
+            toplevel.title('Too bad.')
+        frame = tk.Frame(toplevel, padx=20, pady=20)
         frame.pack()
         output = tk.Label(frame, text=message)
         output.pack()
-        replay_button = tk.Button(frame, text='Replay', command=self.new_game)
+        replay_button = tk.Button(frame, text='Replay', command=lambda: self.new_game(toplevel))
         replay_button.pack()
-        quit_button = tk.Button(frame, text='Quit')
+        quit_button = tk.Button(frame, text='Quit', command=lambda: self.end_game(toplevel))
         quit_button.pack() # TODO: add function to quit
 
-    def new_game(self):
-        pass
+    def new_game(self, popup):
+        """
+        Ends the pop-up window and the current game before starting a new game
+        """
+        self.end_game(popup)
+        self._master.make_new_game()
+
+    def end_game(self, popup):
+        """
+        Ends the pop-up window (with win or lose message) and the main game
+        """
+        popup.destroy()
+        self._root.destroy()

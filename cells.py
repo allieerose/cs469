@@ -4,13 +4,13 @@ class Cell ():
     def __init__(self, root, game, row, column) -> None:
         # construct button object
         self._button = tk.Button(root, image=game.get_icon('blank'), command=self.left_click)
-        #self._button.bind('<ButtonRelease-1>', self.left_click) # can change activation to <Button-1> if on click rather than click+release
         self._button.bind('<Button-3>', self.right_click)
         self._button.grid(row=row, column=column)
         self._game = game # reference parent game
         self._row = row
         self._column = column
-        self._is_mine = False # by default
+        # by default:
+        self._is_mine = False 
         self._flagged = False
         self._adjacent_mines = 0
     
@@ -46,7 +46,7 @@ class Cell ():
         """
         Event handler for right-click of a button.
         """
-        if self._flagged: 
+        if self._flagged and self._button is not None: 
             # unflag cell
             self._button["image"] = self._game.get_icon('blank')
             self._flagged = False
@@ -85,3 +85,15 @@ class Cell ():
             # the mine count for this cell is irrelevant (either it is inactive or is a mine)
             return -1 
         return self._adjacent_mines
+    
+    def get_if_flagged(self):
+        """
+        Returns True if the cell is flagged; returns False otherwise. 
+        """
+        return self._flagged
+    
+    def set_inactive(self):
+        """
+        Sets the cell to inactive so it has no functionality if clicked. Note: no appearance change occurs.
+        """
+        self._button = None

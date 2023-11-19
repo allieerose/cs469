@@ -53,3 +53,14 @@ class Timer ():
         Stops the timer.
         """
         self._end_time = time.time()
+    
+    def get_final_time(self):
+        """
+        Returns a tuple of form (minutes, seconds) representing the final time. Note that
+        the stopwatch must have been started and stopped to retrieve a final time. Otherwise,
+        None is returned. 
+        """
+        if self._end_time is not None:
+            seconds = self._format_time((self._end_time - self._start_time) % 60)
+            minutes = self._format_time((self._end_time - self._start_time) // 60)
+            return (minutes, seconds)
