@@ -39,8 +39,10 @@ class Cell ():
                     self._button = None
                     self._game.zero_cell_reveals(self._row, self._column)
                 else:
-                    self._button["image"] = self._game.get_icon(self._adjacent_mines)
-                    self._button = None # remove button reference to indicate button should no longer function
+                    if self._button is not None: # this check is to avoid an error when the final cell is clicked
+                        self._button["image"] = self._game.get_icon(self._adjacent_mines)
+                        self._button = None # remove button reference to indicate button should no longer function
+                
 
     def right_click(self, event):
         """

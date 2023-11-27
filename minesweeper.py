@@ -1,6 +1,4 @@
 import tkinter as tk
-from stopwatch import Timer
-#from cells import Cell
 from game import Game
 
 

@@ -95,7 +95,10 @@ class Game ():
         if self._clicked_cells == 1:
             self._start_game(row, column)
         elif self._clicked_cells == 71: # all non-bomb cells clicked
+            # TESTING
             print(f'Final cell: ', row, ' ', column)
+            
+            self._cells[row][column].reveal_adj_mines()
             self.win()
         
         # TESTING
