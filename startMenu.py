@@ -51,7 +51,8 @@ class StartMenu():
         instructions_window.title("Instructions")
         frame = tk.Frame(instructions_window, padx=20, pady=20)
         frame.pack()
-        instructions = tk.Label(frame, text='Instruction text here')
+        with open('instructions.txt', 'r') as text:
+            instructions = tk.Label(frame, text=text.read())
         instructions.pack()
         quit_button = tk.Button(frame, text='Close Instructions', command=instructions_window.destroy)
         quit_button.pack()

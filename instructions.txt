@@ -1,1 +1,6 @@
-The goal of minesweeper is to reveal all non-bomb cells on the board in the quickest time. 
+The goal of minesweeper is to reveal all non-bomb cells on the board in the quickest time. A cell is revealed by left-clicking it.
+You can flag cells that you think are bombs by right-clicking them. This puts a flag icon on the cell and removes the ability to reveal it with a left-click. You can unflag a flagged cell by right clicking it again.
+When the game is started, a zeroed-out timer above a grid of cells appears. When you left-click the first cell, the timer will start. Note that the first cell is never a mine - click anywhere you want!
+The value that appears on a cell (a number between 1-8) indicates the number of adjacent mines. With these clues, determine where the bombs are placed and, optionally, mark them with a flag. Left-click cells that are not bombs.
+Once the last non-bomb cell has been revealed, you have won the game. If a bomb cell is clicked, the game is lost.
+Best of luck!
