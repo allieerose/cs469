@@ -5,12 +5,11 @@ import random
 #from PIL import Image, ImageTk
 
 class Game ():
-    def __init__(self, master, rows, columns) -> None:
+    def __init__(self, master, root, rows, columns, num_bombs) -> None:
         # maintain reference to App 
         self._master = master
-        # set up window
-        self._root = tk.Tk()
-        self._root.title("Minesweeper")
+        # reference to main window
+        self._root = root
         # set up timer
         self._timer = Timer(self._root)
         time_label = self._timer.get_label()
@@ -22,15 +21,16 @@ class Game ():
         self._icons = {}
         self._init_icons()
         self._cells = []
+        self._bomb_count = num_bombs # number of bombs to place on the board
+        self._rows = rows
+        self._columns = columns
         self._bombs = []
         self._clicked_cells = 0
-        for i in range(rows):
+        for i in range(self._rows):
             row = []
-            for j in range(columns):
+            for j in range(self._columns):
                 row.append(Cell(self._frame, self, i, j))
             self._cells.append(row)
-        # run application
-        self._root.mainloop()
 
     def _init_icons(self):
         """
@@ -65,11 +65,11 @@ class Game ():
         """
         # start timer
         self._timer.start()
-        # place 10 bombs
-        for i in range(10):
-            bomb_location = (random.randint(0, 8), random.randint(0,8))
+        # place [bomb_count] number of bombs randomly on board
+        for i in range(self._bomb_count):
+            bomb_location = (random.randint(0, self._rows - 1), random.randint(0, self._columns - 1))
             while bomb_location in self._bombs or bomb_location == (row, column):
-                bomb_location = (random.randint(0, 8), random.randint(0,8))
+                bomb_location = (random.randint(0, self._rows - 1), random.randint(0,self._columns - 1))
             self._bombs.append(bomb_location)
             self._cells[bomb_location[0]][bomb_location[1]].set_bomb()
             # update the adjacent bomb count for all adjacent cells
@@ -94,7 +94,7 @@ class Game ():
         self._clicked_cells += 1
         if self._clicked_cells == 1:
             self._start_game(row, column)
-        elif self._clicked_cells == 71: # all non-bomb cells clicked
+        elif self._clicked_cells == (self._rows * self._columns) - self._bomb_count: # all non-bomb cells clicked
             # TESTING
             print(f'Final cell: ', row, ' ', column)
             
@@ -128,8 +128,8 @@ class Game ():
         adjacent cells on the board to the cell at the given row, column.
         """
         adj_cells = []
-        for i in range(max(0, row-1), min(9, row+2)):
-            for j in range(max(0, column-1), min(9, column+2)):
+        for i in range(max(0, row-1), min(self._rows, row+2)):
+            for j in range(max(0, column-1), min(self._columns, column+2)):
                 if (i,j) != (row, column):
                     adj_cells.append((i,j))
         
@@ -210,19 +210,32 @@ class Game ():
         output.pack()
         replay_button = tk.Button(frame, text='Replay', command=lambda: self.new_game(toplevel))
         replay_button.pack()
-        quit_button = tk.Button(frame, text='Quit', command=lambda: self.end_game(toplevel))
+        menu_button = tk.Button(frame, text='Return to Menu', command=lambda: self.return_to_menu(toplevel))
+        menu_button.pack()
+        quit_button = tk.Button(frame, text='Quit', command=lambda: self.end_game(toplevel, True))
         quit_button.pack() # TODO: add function to quit
 
     def new_game(self, popup):
         """
         Ends the pop-up window and the current game before starting a new game
         """
-        self.end_game(popup)
-        self._master.make_new_game()
+        self.end_game(popup, False)
+        self._master.make_new_game(self._rows, self._columns, self._bomb_count)
+    
+    def return_to_menu(self, popup):
+        """
+        Ends the pop-up window and returns to the start menu screen
+        """
+        self.end_game(popup, False)
+        self._master.open_start_menu()
 
-    def end_game(self, popup):
+    def end_game(self, popup, close_root_window):
         """
         Ends the pop-up window (with win or lose message) and the main game
         """
         popup.destroy()
-        self._root.destroy()
+        if close_root_window:
+            self._root.destroy()
+        else:
+            self._timer.get_label().destroy()
+            self._frame.destroy()

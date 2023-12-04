@@ -1,0 +1,1 @@
+The goal of minesweeper is to reveal all non-bomb cells on the board in the quickest time. 
