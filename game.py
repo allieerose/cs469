@@ -39,6 +39,7 @@ class Game ():
         self._icons['blank'] = tk.PhotoImage(file='icons/blank.png').subsample(3)
         self._icons['mine'] = tk.PhotoImage(file='icons/mine.png').subsample(3)
         self._icons['flag'] = tk.PhotoImage(file='icons/flag.png').subsample(3)
+        self._icons['xflag'] = tk.PhotoImage(file='icons/xflag.png').subsample(3)
         self._icons[1] = tk.PhotoImage(file='icons/1.png').subsample(3)
         self._icons[2] = tk.PhotoImage(file='icons/2.png').subsample(3)
         self._icons[3] = tk.PhotoImage(file='icons/3.png').subsample(3)
@@ -75,8 +76,8 @@ class Game ():
             # update the adjacent bomb count for all adjacent cells
             self.add_adjacent_bombs(bomb_location[0], bomb_location[1]) 
 
-            # TESTING !!!
-            print(bomb_location) 
+            # TESTING
+            #print(bomb_location) 
     
     def add_adjacent_bombs(self, row, column):
         """
@@ -102,8 +103,8 @@ class Game ():
             self.win()
         
         # TESTING
-        if self._clicked_cells % 10 == 0:
-            print(self._clicked_cells)
+        #if self._clicked_cells % 10 == 0:
+        #    print(self._clicked_cells)
     
     def zero_cell_reveals(self, row, column):
         """
@@ -161,14 +162,12 @@ class Game ():
         self._timer.stop()
         # perform lose-state actions
 
-        # set all cells to inactive
-        self.deactivate_board()
-        # call pop-up
+        # compile game info
         correct_flags = 0
         incorrect_flags = 0
         unflagged_bombs = 0
-        for i in range(9):
-            for j in range(9):
+        for i in range(self._rows):
+            for j in range(self._columns):
                 if (i,j) in self._bombs:
                     if self._cells[i][j].get_if_flagged():
                         # cell is a bomb and was flagged
@@ -176,9 +175,19 @@ class Game ():
                     else:
                         # cell is a bomb and was NOT flagged
                         unflagged_bombs += 1
+                        # reveal bomb
+                        self._cells[i][j].reveal_bad_cell()
+
                 elif self._cells[i][j].get_if_flagged():
                     # cell is not a bomb and is flagged
                     incorrect_flags += 1
+                    # mark flag as incorrect
+                    self._cells[i][j].reveal_bad_cell()
+        
+        # set all cells to inactive
+        self.deactivate_board()
+
+        # call pop-up
         message = ("OOPS, you clicked on a mine!\n"
         f"You correctly flagged {correct_flags} bomb(s), incorrectly flagged {incorrect_flags} cells(s), and"
         f" missed {unflagged_bombs} bomb(s) on the board.\n Play again?")
@@ -213,25 +222,26 @@ class Game ():
         menu_button = tk.Button(frame, text='Return to Menu', command=lambda: self.return_to_menu(toplevel))
         menu_button.pack()
         quit_button = tk.Button(frame, text='Quit', command=lambda: self.end_game(toplevel, True))
-        quit_button.pack() # TODO: add function to quit
+        quit_button.pack()
 
     def new_game(self, popup):
         """
-        Ends the pop-up window and the current game before starting a new game
+        Ends the pop-up window and the current game before starting a new game.
         """
         self.end_game(popup, False)
         self._master.make_new_game(self._rows, self._columns, self._bomb_count)
     
     def return_to_menu(self, popup):
         """
-        Ends the pop-up window and returns to the start menu screen
+        Ends the pop-up window and returns to the start menu screen.
         """
         self.end_game(popup, False)
         self._master.open_start_menu()
 
     def end_game(self, popup, close_root_window):
         """
-        Ends the pop-up window (with win or lose message) and the main game
+        Ends the pop-up window (with win or lose message). If close_root_window is true, also closes
+        the main game window. Otherwise, removes game content from root window but doesn't close it.
         """
         popup.destroy()
         if close_root_window:

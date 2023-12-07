@@ -41,8 +41,7 @@ class Cell ():
                 else:
                     if self._button is not None: # this check is to avoid an error when the final cell is clicked
                         self._button["image"] = self._game.get_icon(self._adjacent_mines)
-                        self._button = None # remove button reference to indicate button should no longer function
-                
+                        self._button = None # remove button reference to indicate button should no longer function          
 
     def right_click(self, event):
         """
@@ -67,8 +66,9 @@ class Cell ():
         Performs the button appearance change to reveal the number of adjacent bombs without the cell having
         been left-clicked. This is a helper method for revealing cells adjacent to a revealed 0-value cell. 
         """
-        if self._is_mine: # for testing purposes
-            print("ERROR! NON-0 CELL PICKED IN METHOD")
+        # TESTING
+        #if self._is_mine:
+        #    print("ERROR! NON-0 CELL PICKED IN METHOD")
 
         if self._button is not None:
             self._button.configure(
@@ -79,6 +79,18 @@ class Cell ():
             )
             self._button = None # cell should be inactive after being revealed
     
+    def reveal_bad_cell(self):
+        """
+        Reveals an unflagged mine or an incorrectly placed flag.
+        """
+        if self._button is None:
+            return
+        
+        if self._is_mine:
+            self._button["image"] = self._game.get_icon('mine')
+        elif self._flagged:
+            self._button["image"] = self._game.get_icon('xflag')
+
     def get_adj_mine_count(self):
         """
         Returns the number of recorded adjacent mines.
