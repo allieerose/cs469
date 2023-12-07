@@ -6,15 +6,23 @@ class StartMenu():
         self._root = root
         self._frame = tk.Frame(self._root, padx=20, pady=20)
         self._frame.pack()
+
+        title = tk.Label(self._frame, text="Minesweeper", font=('Segoe UI', '14'))
+        title.pack()
+        credit = tk.Label(self._frame, text="Programmed by Allie Rose \n", font=('Segoe UI', '10'))
+        credit.pack()
+
         # Difficulty options
-        difficulty_label = tk.Label(self._frame, text="Select a difficulty")
+        difficulty_frame = tk.Frame(self._frame)
+        difficulty_frame.pack()
+        difficulty_label = tk.Label(difficulty_frame, text="Select a difficulty", font=('Segoe UI', '10'))
         difficulty_label.pack()
         self._difficulty = tk.StringVar(value='easy')
-        easy_mode = tk.Radiobutton(self._frame, text="Easy", variable=self._difficulty, value='easy')
+        easy_mode = tk.Radiobutton(difficulty_frame, text="Easy", variable=self._difficulty, value='easy')
         easy_mode.pack(anchor=tk.W)
-        medium_mode = tk.Radiobutton(self._frame, text="Medium", variable=self._difficulty, value='medium')
+        medium_mode = tk.Radiobutton(difficulty_frame, text="Medium", variable=self._difficulty, value='medium')
         medium_mode.pack(anchor=tk.W)
-        hard_mode = tk.Radiobutton(self._frame, text="Hard", variable=self._difficulty, value='hard')
+        hard_mode = tk.Radiobutton(difficulty_frame, text="Hard", variable=self._difficulty, value='hard')
         hard_mode.pack(anchor=tk.W)
 
         # start game button
@@ -51,8 +59,10 @@ class StartMenu():
         instructions_window.title("Instructions")
         frame = tk.Frame(instructions_window, padx=20, pady=20)
         frame.pack()
+        header = tk.Label(frame, text='Instructions', font=('Segoe UI', '12'))
+        header.pack()
         with open('instructions.txt', 'r') as text:
-            instructions = tk.Label(frame, text=text.read())
+            instructions = tk.Label(frame, text=text.read(), anchor='w', justify='left', wraplength=300)
         instructions.pack()
         quit_button = tk.Button(frame, text='Close Instructions', command=instructions_window.destroy)
         quit_button.pack()
