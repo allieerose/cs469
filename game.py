@@ -2,7 +2,8 @@ import tkinter as tk
 from stopwatch import Timer
 from cells import Cell
 import random
-#from PIL import Image, ImageTk
+import os
+import sys
 
 class Game ():
     def __init__(self, master, root, rows, columns, num_bombs) -> None:
@@ -36,19 +37,35 @@ class Game ():
         """
         Initializes all icons for later display on cells.
         """
-        self._icons['blank'] = tk.PhotoImage(file='icons/blank.png').subsample(3)
-        self._icons['mine'] = tk.PhotoImage(file='icons/mine.png').subsample(3)
-        self._icons['flag'] = tk.PhotoImage(file='icons/flag.png').subsample(3)
-        self._icons['xflag'] = tk.PhotoImage(file='icons/xflag.png').subsample(3)
-        self._icons[1] = tk.PhotoImage(file='icons/1.png').subsample(3)
-        self._icons[2] = tk.PhotoImage(file='icons/2.png').subsample(3)
-        self._icons[3] = tk.PhotoImage(file='icons/3.png').subsample(3)
-        self._icons[4] = tk.PhotoImage(file='icons/4.png').subsample(3)
-        self._icons[5] = tk.PhotoImage(file='icons/5.png').subsample(3)
-        self._icons[6] = tk.PhotoImage(file='icons/6.png').subsample(3)
-        self._icons[7] = tk.PhotoImage(file='icons/7.png').subsample(3)
-        self._icons[8] = tk.PhotoImage(file='icons/8.png').subsample(3)
-        self._icons[9] = tk.PhotoImage(file='icons/9.png').subsample(3)
+        self._icons['blank'] = tk.PhotoImage(file=self.resource_path('icons/blank.png')).subsample(3)
+        self._icons['mine'] = tk.PhotoImage(file=self.resource_path('icons/mine.png')).subsample(3)
+        self._icons['flag'] = tk.PhotoImage(file=self.resource_path('icons/flag.png')).subsample(3)
+        self._icons['xflag'] = tk.PhotoImage(file=self.resource_path('icons/xflag.png')).subsample(3)
+        self._icons[1] = tk.PhotoImage(file=self.resource_path('icons/1.png')).subsample(3)
+        self._icons[2] = tk.PhotoImage(file=self.resource_path('icons/2.png')).subsample(3)
+        self._icons[3] = tk.PhotoImage(file=self.resource_path('icons/3.png')).subsample(3)
+        self._icons[4] = tk.PhotoImage(file=self.resource_path('icons/4.png')).subsample(3)
+        self._icons[5] = tk.PhotoImage(file=self.resource_path('icons/5.png')).subsample(3)
+        self._icons[6] = tk.PhotoImage(file=self.resource_path('icons/6.png')).subsample(3)
+        self._icons[7] = tk.PhotoImage(file=self.resource_path('icons/7.png')).subsample(3)
+        self._icons[8] = tk.PhotoImage(file=self.resource_path('icons/8.png')).subsample(3)
+        self._icons[9] = tk.PhotoImage(file=self.resource_path('icons/9.png')).subsample(3)
+    
+    def resource_path(self, relative_path):
+        """ 
+        Get absolute path to resource, works for dev and for PyInstaller 
+        * NOTE: This method is not original code. It is courtesy of the 
+        following fourm post to help with bundling required files into a
+        single executable. 
+        https://stackoverflow.com/a/13790741/
+        """
+        try:
+            # PyInstaller creates a temp folder and stores path in _MEIPASS
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)
     
     def get_icon(self, name):
         """
@@ -189,7 +206,7 @@ class Game ():
 
         # call pop-up
         message = ("OOPS, you clicked on a mine!\n"
-        f"You correctly flagged {correct_flags} bomb(s), incorrectly flagged {incorrect_flags} cells(s), and"
+        f"You correctly flagged {correct_flags} bomb(s), incorrectly flagged {incorrect_flags} cell(s), and"
         f" missed {unflagged_bombs} bomb(s) on the board.\n Play again?")
         self.popup(False, message)
     

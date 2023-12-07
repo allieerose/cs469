@@ -1,4 +1,6 @@
 import tkinter as tk
+import os
+import sys
 
 class StartMenu():
     def __init__(self, master, root) -> None:
@@ -61,8 +63,24 @@ class StartMenu():
         frame.pack()
         header = tk.Label(frame, text='Instructions', font=('Segoe UI', '12'))
         header.pack()
-        with open('instructions.txt', 'r') as text:
+        with open(self.resource_path('instructions.txt'), 'r') as text:
             instructions = tk.Label(frame, text=text.read(), anchor='w', justify='left', wraplength=300)
         instructions.pack()
         quit_button = tk.Button(frame, text='Close Instructions', command=instructions_window.destroy)
         quit_button.pack()
+    
+    def resource_path(self, relative_path):
+        """ 
+        Get absolute path to resource, works for dev and for PyInstaller 
+        * NOTE: This method is not original code. It is courtesy of the 
+        following fourm post to help with bundling required files into a
+        single executable. 
+        https://stackoverflow.com/a/13790741/
+        """
+        try:
+            # PyInstaller creates a temp folder and stores path in _MEIPASS
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath(".")
+
+        return os.path.join(base_path, relative_path)
